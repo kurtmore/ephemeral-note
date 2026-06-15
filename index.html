@@ -80,3 +80,80 @@
   <script>
     const editor = document.getElementById("editor");
     const placeholder = document.getElementById("placeholder");
+    const toggleBtn = document.getElementById("toggle");
+    const wipeBtn = document.getElementById("wipe");
+
+    let inactivityTimer;
+    const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutes
+
+    /* ✅ SYSTEM DARK MODE DEFAULT */
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.body.classList.add("dark");
+    }
+
+    /* ✅ DARK MODE TOGGLE */
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+    });
+
+    /* ✅ PLACEHOLDER LOGIC */
+    editor.addEventListener("input", () => {
+      if (editor.innerText.trim().length > 0) {
+        placeholder.style.display = "none";
+      } else {
+        placeholder.style.display = "block";
+      }
+      resetTimer();
+    });
+
+    /* ✅ TIMER RESET */
+    function resetTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        wipeAll();
+      }, INACTIVITY_LIMIT);
+    }
+
+    /* ✅ WIPE → RELOAD (fixed behavior) */
+    function wipeAll() {
+      location.reload();
+    }
+
+    /* ✅ TOUCH WIPE BUTTON */
+    wipeBtn.addEventListener("click", wipeAll);
+
+    /* ✅ KEYBOARD PANIC WIPE */
+    window.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        wipeAll();
+      }
+    });
+
+    /* ✅ ACTIVITY TRACKING */
+    ["keydown", "mousedown", "mousemove", "touchstart"].forEach(evt => {
+      window.addEventListener(evt, resetTimer);
+    });
+
+    /* ✅ WIPE ON EXIT */
+    window.addEventListener("beforeunload", wipeAll);
+
+    /* ✅ KIOSK HARDENING: wipe on app switch */
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        wipeAll();
+      }
+    });
+
+    /* ✅ BLOCK DRAG/DROP */
+    window.addEventListener("drop", e => e.preventDefault());
+    window.addEventListener("dragover", e => e.preventDefault());
+
+    /* ✅ AUTO FOCUS */
+    editor.focus();
+
+    /* ✅ START TIMER */
+    resetTimer();
+  </script>
+</body>
+</html>
