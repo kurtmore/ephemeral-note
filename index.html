@@ -1,8 +1,10 @@
+
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <title>Ephemeral Note</title>
+
   <style>
     body {
       font-family: sans-serif;
@@ -11,9 +13,21 @@
       line-height: 1.5;
       background: white;
       color: black;
+      outline: none;
     }
-  </style>
-</head>
-<body contenteditable="true" spellcheck="false">
-</body>
-</html>
+
+    /* Dark mode */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #111;
+        color: #eee;
+      }
+      .placeholder {
+        color: #666;
+      }
+    }
+
+    .placeholder {
+      opacity: 0.4;
+      pointer-events: none;
+    }
