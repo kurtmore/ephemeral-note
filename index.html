@@ -16,19 +16,16 @@
       transition: background 0.2s, color 0.2s;
     }
 
-    /* Dark mode */
     body.dark {
       background: #111;
       color: #eee;
     }
 
-    /* Editor */
     #editor {
       min-height: 80vh;
       outline: none;
     }
 
-    /* Placeholder */
     #placeholder {
       position: absolute;
       top: 3rem;
@@ -37,12 +34,10 @@
       pointer-events: none;
     }
 
-    /* Light gray in dark mode */
     body.dark #placeholder {
       color: #bbb;
     }
 
-    /* Buttons (touch-friendly) */
     button {
       position: fixed;
       top: 1rem;
@@ -58,22 +53,15 @@
       opacity: 1;
     }
 
-    #toggle {
-      right: 1rem;
-    }
-
-    #wipe {
-      right: 5rem;
-    }
+    #toggle { right: 1rem; }
+    #wipe { right: 5rem; }
   </style>
 </head>
 
 <body>
-  <!-- Buttons -->
   <button id="wipe">🧹</button>
   <button id="toggle">🌙</button>
 
-  <!-- Editor -->
   <div id="editor" contenteditable="true" spellcheck="false"></div>
   <div id="placeholder">Start typing… (nothing is saved)</div>
 
@@ -84,76 +72,7 @@
     const wipeBtn = document.getElementById("wipe");
 
     let inactivityTimer;
-    const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutes
+    const INACTIVITY_LIMIT = 10 * 60 * 1000;
 
-    /* ✅ SYSTEM DARK MODE DEFAULT */
+    /* ✅ System dark mode */
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.body.classList.add("dark");
-    }
-
-    /* ✅ DARK MODE TOGGLE */
-    toggleBtn.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-    });
-
-    /* ✅ PLACEHOLDER LOGIC */
-    editor.addEventListener("input", () => {
-      if (editor.innerText.trim().length > 0) {
-        placeholder.style.display = "none";
-      } else {
-        placeholder.style.display = "block";
-      }
-      resetTimer();
-    });
-
-    /* ✅ TIMER RESET */
-    function resetTimer() {
-      clearTimeout(inactivityTimer);
-      inactivityTimer = setTimeout(() => {
-        wipeAll();
-      }, INACTIVITY_LIMIT);
-    }
-
-    /* ✅ WIPE → RELOAD (fixed behavior) */
-    function wipeAll() {
-      location.reload();
-    }
-
-    /* ✅ TOUCH WIPE BUTTON */
-    wipeBtn.addEventListener("click", wipeAll);
-
-    /* ✅ KEYBOARD PANIC WIPE */
-    window.addEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        wipeAll();
-      }
-    });
-
-    /* ✅ ACTIVITY TRACKING */
-    ["keydown", "mousedown", "mousemove", "touchstart"].forEach(evt => {
-      window.addEventListener(evt, resetTimer);
-    });
-
-    /* ✅ WIPE ON EXIT */
-    window.addEventListener("beforeunload", wipeAll);
-
-    /* ✅ KIOSK HARDENING: wipe on app switch */
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) {
-        wipeAll();
-      }
-    });
-
-    /* ✅ BLOCK DRAG/DROP */
-    window.addEventListener("drop", e => e.preventDefault());
-    window.addEventListener("dragover", e => e.preventDefault());
-
-    /* ✅ AUTO FOCUS */
-    editor.focus();
-
-    /* ✅ START TIMER */
-    resetTimer();
-  </script>
-</body>
-</html>
