@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,3 +30,30 @@
       opacity: 0.4;
       pointer-events: none;
     }
+  </style>
+</head>
+
+<body contenteditable="true" spellcheck="false">
+  <div id="placeholder" class="placeholder">
+    Start typing… (nothing is saved)
+  </div>
+
+  <script>
+    const body = document.body;
+    const placeholder = document.getElementById("placeholder");
+
+    let inactivityTimer;
+    const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutes
+
+    function resetTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        wipeAll();
+      }, INACTIVITY_LIMIT);
+    }
+
+    function wipeAll() {
+      body.innerHTML = "";
+    }
+
+    // Remove placeholder when typing starts
