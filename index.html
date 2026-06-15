@@ -28,37 +28,52 @@
       outline: none;
     }
 
-    /* Placeholder overlay */
+    /* Placeholder */
     #placeholder {
       position: absolute;
       top: 3rem;
       left: 3rem;
-      opacity: 0.4;
+      color: #999;
       pointer-events: none;
     }
 
-    /* Toggle button */
-    #toggle {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      font-size: 1rem;
-      padding: 0.4rem 0.7rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      opacity: 0.7;
+    /* ✅ Light gray in dark mode */
+    body.dark #placeholder {
+      color: #bbb;
     }
 
-    #toggle:hover {
+    /* Buttons (touch-friendly) */
+    button {
+      position: fixed;
+      top: 1rem;
+      padding: 0.6rem 1rem;
+      font-size: 1.3rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      opacity: 0.75;
+    }
+
+    button:hover {
       opacity: 1;
+    }
+
+    #toggle {
+      right: 1rem;
+    }
+
+    #wipe {
+      right: 5rem;
     }
   </style>
 </head>
 
 <body>
+  <!-- Buttons -->
+  <button id="wipe">🧹</button>
   <button id="toggle">🌙</button>
 
+  <!-- Editor -->
   <div id="editor" contenteditable="true" spellcheck="false"></div>
   <div id="placeholder">Start typing… (nothing is saved)</div>
 
@@ -66,6 +81,7 @@
     const editor = document.getElementById("editor");
     const placeholder = document.getElementById("placeholder");
     const toggleBtn = document.getElementById("toggle");
+    const wipeBtn = document.getElementById("wipe");
 
     let inactivityTimer;
     const INACTIVITY_LIMIT = 10 * 60 * 1000; // 10 minutes
@@ -75,7 +91,7 @@
       document.body.classList.add("dark");
     }
 
-    /* ✅ MANUAL TOGGLE (no persistence) */
+    /* ✅ DARK MODE TOGGLE */
     toggleBtn.addEventListener("click", () => {
       document.body.classList.toggle("dark");
     });
@@ -111,7 +127,10 @@
       document.close();
     }
 
-    /* ✅ PANIC WIPE */
+    /* ✅ TOUCH WIPE BUTTON (iPad friendly) */
+    wipeBtn.addEventListener("click", wipeAll);
+
+    /* ✅ KEYBOARD PANIC WIPE (desktop) */
     window.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.key.toLowerCase() === "k") {
         e.preventDefault();
@@ -126,6 +145,13 @@
 
     /* ✅ WIPE ON EXIT */
     window.addEventListener("beforeunload", wipeAll);
+
+    /* ✅ ✅ KIOSK HARDENING: wipe on app/tab switch */
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        wipeAll();
+      }
+    });
 
     /* ✅ BLOCK DRAG/DROP */
     window.addEventListener("drop", e => e.preventDefault());
