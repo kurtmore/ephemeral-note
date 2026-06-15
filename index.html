@@ -76,3 +76,72 @@
 
     /* ✅ System dark mode */
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.body.classList.add("dark");
+    }
+
+    /* ✅ Toggle */
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+    });
+
+    /* ✅ Placeholder */
+    editor.addEventListener("input", () => {
+      if (editor.innerText.trim().length > 0) {
+        placeholder.style.display = "none";
+      } else {
+        placeholder.style.display = "block";
+      }
+      resetTimer();
+    });
+
+    /* ✅ Soft wipe (button + kiosk) */
+    function softClear() {
+      editor.innerHTML = "";
+      placeholder.style.display = "block";
+      editor.focus();
+    }
+
+    /* ✅ Hard reset (inactivity + hotkey) */
+    function hardReset() {
+      location.href = location.href;
+    }
+
+    /* ✅ Button = SOFT wipe */
+    wipeBtn.addEventListener("click", softClear);
+
+    /* ✅ Ctrl+K = HARD reset */
+    window.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        hardReset();
+      }
+    });
+
+    /* ✅ Timer */
+    function resetTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(hardReset, INACTIVITY_LIMIT);
+    }
+
+    /* ✅ Activity tracking */
+    ["keydown", "mousedown", "mousemove", "touchstart"].forEach(evt => {
+      window.addEventListener(evt, resetTimer);
+    });
+
+    /* ✅ Kiosk: clear on app switch */
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        softClear();
+      }
+    });
+
+    /* ✅ Block drag/drop */
+    window.addEventListener("drop", e => e.preventDefault());
+    window.addEventListener("dragover", e => e.preventDefault());
+
+    editor.focus();
+    resetTimer();
+  </script>
+</body>
+</html>
+``
