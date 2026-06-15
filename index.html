@@ -52,8 +52,53 @@
       }, INACTIVITY_LIMIT);
     }
 
+    // ✅ Recommended practical "destroy DOM"
     function wipeAll() {
-      body.innerHTML = "";
+      document.open();
+      document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Ephemeral Note</title>
+          </head>
+          <body style="background:black;"></body>
+        </html>
+      `);
+      document.close();
     }
 
     // Remove placeholder when typing starts
+    body.addEventListener("input", () => {
+      if (body.innerText.trim().length > 0) {
+        if (placeholder) placeholder.remove();
+      }
+      resetTimer();
+    });
+
+    // Track general activity
+    ["keydown", "mousedown", "mousemove", "touchstart"].forEach(event => {
+      window.addEventListener(event, resetTimer);
+    });
+
+    // Panic wipe (Ctrl + K)
+    window.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        wipeAll();
+      }
+    });
+
+    // Safety wipe on exit
+    window.addEventListener("beforeunload", () => {
+      wipeAll();
+    });
+
+    // Prevent drag/drop
+    window.addEventListener("drop", (e) => e.preventDefault());
+    window.addEventListener("dragover", (e) => e.preventDefault());
+
+    // Start timer
+    resetTimer();
+  </script>
+</body>
+</html>
